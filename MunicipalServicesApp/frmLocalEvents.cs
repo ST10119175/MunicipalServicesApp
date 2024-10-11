@@ -13,10 +13,7 @@ namespace MunicipalServicesApp
     public partial class frmLocalEvents : Form
     {
 
-        
-
-
-
+    
 
         // Queue for managing service requests
         private Queue<ServiceRequest> serviceQueue = new Queue<ServiceRequest>();
@@ -111,15 +108,34 @@ namespace MunicipalServicesApp
             // Find the most searched term (most frequent)
             string mostFrequentSearch = searchFrequency.OrderByDescending(kvp => kvp.Value).FirstOrDefault().Key;
 
+            // Find the top 3 most searched terms (if available)
+            var mostFrequentSearchTerms = searchFrequency.OrderByDescending(kvp => kvp.Value)
+                                                          .Take(3)
+                                                          .Select(kvp => kvp.Key)
+                                                          .ToList();
+
+
+            // List to accumulate recommended events based on frequent terms
+            var recommendedEvents = new List<Event>();
 
             // Ensure mostFrequentSearch is not null or empty
             if (!string.IsNullOrEmpty(mostFrequentSearch))
             {
 
-                // Recommend events that match the most frequent search term
-                var recommendedEvents = eventList.Where(evt =>
-                evt.Name.ToLower().Contains(mostFrequentSearch) ||
-                evt.Category.ToLower().Contains(mostFrequentSearch)).ToList();
+                //// Recommend events that match the most frequent search term
+                //var recommendedEvents = eventList.Where(evt =>
+                //evt.Name.ToLower().Contains(mostFrequentSearch) ||
+                //evt.Category.ToLower().Contains(mostFrequentSearch)).ToList();
+
+                // Collect events that match the top search terms
+                foreach (var searchTerm in mostFrequentSearchTerms)
+                {
+                    var eventsMatchingTerm = eventList.Where(evt =>
+                        evt.Name.ToLower().Contains(searchTerm) ||
+                        evt.Category.ToLower().Contains(searchTerm)).ToList();
+
+                    recommendedEvents.AddRange(eventsMatchingTerm);
+                }
 
 
                 if (recommendedEvents.Any())
@@ -617,7 +633,11 @@ namespace MunicipalServicesApp
         {
 
 
-            string searchText = txtSearch.Text.ToLower();
+            //string searchText = txtSearch.Text.ToLower();
+
+            // Trim the search text to remove any leading/trailing whitespace
+            string searchText = txtSearch.Text.Trim().ToLower();
+
 
             // If the search box contains the placeholder, we ignore the text search
             if (searchText == SearchPlaceholder.ToLower())
