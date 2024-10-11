@@ -74,7 +74,6 @@
             // 
             this.btnLocalEvents.BackColor = System.Drawing.Color.Orange;
             this.btnLocalEvents.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnLocalEvents.Enabled = false;
             this.btnLocalEvents.FlatAppearance.BorderSize = 0;
             this.btnLocalEvents.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLocalEvents.Font = new System.Drawing.Font("Segoe UI", 12F);
@@ -85,6 +84,7 @@
             this.btnLocalEvents.TabIndex = 0;
             this.btnLocalEvents.Text = "Local Events";
             this.btnLocalEvents.UseVisualStyleBackColor = false;
+            this.btnLocalEvents.Click += new System.EventHandler(this.btnLocalEvents_Click);
             // 
             // Title
             // 
@@ -115,7 +115,7 @@
             this.label1.Font = new System.Drawing.Font("Segoe UI", 22.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(266, 7);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(319, 50);
+            this.label1.Size = new System.Drawing.Size(258, 41);
             this.label1.TabIndex = 5;
             this.label1.Text = "Municipal services";
             this.label1.Click += new System.EventHandler(this.label1_Click);

@@ -63,6 +63,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventListPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EventListPopup.Designer.cs">
+      <DependentUpon>EventListPopup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmLocalEvents.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmLocalEvents.Designer.cs">
+      <DependentUpon>frmLocalEvents.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Local Events and Announcements.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Local Events and Announcements.Designer.cs">
+      <DependentUpon>Local Events and Announcements.cs</DependentUpon>
+    </Compile>
     <Compile Include="Main Menu.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -78,6 +96,16 @@
     <Compile Include="ReportIssuesForm.Designer.cs">
       <DependentUpon>ReportIssuesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="SampleDataProvider.cs" />
+    <EmbeddedResource Include="EventListPopup.resx">
+      <DependentUpon>EventListPopup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmLocalEvents.resx">
+      <DependentUpon>frmLocalEvents.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Local Events and Announcements.resx">
+      <DependentUpon>Local Events and Announcements.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Main Menu.resx">
       <DependentUpon>Main Menu.cs</DependentUpon>
     </EmbeddedResource>

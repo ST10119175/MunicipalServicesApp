@@ -56,5 +56,13 @@ namespace MunicipalServicesApp
         {
 
         }
+
+        private void btnLocalEvents_Click(object sender, EventArgs e)
+        {
+            //open frmLocalEvents form
+            frmLocalEvents frmLocalEvents = new frmLocalEvents();
+            frmLocalEvents.ShowDialog();
+
+        }
     }
 }
