@@ -50,6 +50,9 @@ namespace MunicipalServicesApp
         private HashSet<DateTime> uniqueDates = new HashSet<DateTime>();
 
 
+        // List to store user search history
+        private List<string> searchHistory = new List<string>();
+
 
 
 
@@ -77,6 +80,87 @@ namespace MunicipalServicesApp
             
 
         }
+
+
+
+
+        private Dictionary<string, int> AnalyzeSearchHistory()
+        {
+            var searchFrequency = new Dictionary<string, int>();
+
+            // Count occurrences of search terms
+            foreach (var term in searchHistory)
+            {
+                if (searchFrequency.ContainsKey(term))
+                {
+                    searchFrequency[term]++;
+                }
+                else
+                {
+                    searchFrequency[term] = 1;
+                }
+            }
+
+            return searchFrequency;
+        }
+
+        private void RecommendEventsBasedOnSearchHistory()
+        {
+            var searchFrequency = AnalyzeSearchHistory();
+
+            // Find the most searched term (most frequent)
+            string mostFrequentSearch = searchFrequency.OrderByDescending(kvp => kvp.Value).FirstOrDefault().Key;
+
+
+            // Ensure mostFrequentSearch is not null or empty
+            if (!string.IsNullOrEmpty(mostFrequentSearch))
+            {
+
+                // Recommend events that match the most frequent search term
+                var recommendedEvents = eventList.Where(evt =>
+                evt.Name.ToLower().Contains(mostFrequentSearch) ||
+                evt.Category.ToLower().Contains(mostFrequentSearch)).ToList();
+
+
+                if (recommendedEvents.Any())
+                {
+                    PopulateListView(recommendedEvents, mostFrequentSearch);
+                    MessageBox.Show($"Recommended events based on your interest in '{mostFrequentSearch}'", "Recommendations", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("No recommendations available based on your search history.", "Recommendations", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            else
+            {
+                MessageBox.Show("No frequent search term found. Please search for some events first.", "Recommendations", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void PopulateListView(IEnumerable<Event> events,string searched)
+        {
+            listViewEvents.Items.Clear();
+
+            // Display a message indicating that these are recommendations
+            
+                MessageBox.Show("Here are events based on your previous searches!", "Recommendations", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            
+
+            foreach (var e in events)
+            {
+                var item = new ListViewItem(new[]
+                {
+            e.Name,
+            e.Date.ToString("dd MMM yyyy"),
+            e.Category
+        });
+                listViewEvents.Items.Add(item);
+            }
+        }
+
+
+
 
         private void materialButton1_Click(object sender, EventArgs e)
         {
@@ -316,6 +400,9 @@ namespace MunicipalServicesApp
 
         private void PopulateListView(IEnumerable<Event> events)
         {
+
+
+
             listViewEvents.Items.Clear();
             foreach (var e in events)
             {
@@ -328,6 +415,8 @@ namespace MunicipalServicesApp
                 listViewEvents.Items.Add(item);
             }
         }
+
+
 
 
         // Simplified ListView population
@@ -535,7 +624,21 @@ namespace MunicipalServicesApp
             {
                 searchText = null;
             }
-       
+
+            if (!string.IsNullOrEmpty(searchText) && searchText != SearchPlaceholder.ToLower())
+            {
+                if (!searchHistory.Contains(searchText))
+                {
+                    searchHistory.Add(searchText);
+                }
+
+                else
+                {
+                    searchHistory.Add("goku");
+                    searchHistory.Add("sports");
+                }
+            }
+
             string selectedCategory = comboBoxCategories.SelectedItem as string;
             DateTime selectedDate = dateTimePicker1.Value.Date;
             bool isDateFilterChecked = dateTimePicker1.Checked; // Check if the date filter is enabled
@@ -638,6 +741,11 @@ namespace MunicipalServicesApp
             {
                 ShowError("Error generating recommendations", ex);
             }
+
+         
+            RecommendEventsBasedOnSearchHistory();
+        
+
         }
 
 
