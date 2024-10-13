@@ -29,44 +29,6 @@ namespace MunicipalServicesApp
         private Button btnRecommend;
 
 
-        //private System.Windows.Forms.TextBox txtSearch;
-        //private System.Windows.Forms.Button btnSearch;
-        //private System.Windows.Forms.ComboBox comboBoxCategories;
-        //private System.Windows.Forms.DateTimePicker dateTimePicker1;
-        //private System.Windows.Forms.Button btnSubmit;
-        //private System.Windows.Forms.ListView listViewEvents;
-        //private System.Windows.Forms.Label lblTitle;
-        //private System.Windows.Forms.Panel mainPanel;
-        //private System.Windows.Forms.Panel searchPanel;
-        //private System.Windows.Forms.Panel filterPanel;
-        //private System.Windows.Forms.Panel buttonPanel;
-        //private System.Windows.Forms.Button btnBack;
-        //private System.Windows.Forms.Button btnRecommend;
-        //private System.Windows.Forms.Label lblFilter;
-        //private System.Windows.Forms.Label lblDate;
-        //private System.Windows.Forms.Panel headerPanel;
-
-
-
-        //private Panel headerPanel;
-        //private Label lblTitle;
-        //private Panel mainPanel;
-        //private Panel searchPanel;
-        //private TextBox txtSearch;
-        //private Button btnSearch;
-        //private Panel filterPanel;
-        //private Label lblFilter;
-        //private ComboBox comboBoxCategories;
-        //private Label lblDate;
-        //private DateTimePicker dateTimePicker1;
-        //private Button btnSubmit;
-        //private ListView listViewEvents;
-        //private Panel buttonPanel;
-        //private Button btnBack;
-        //private Button btnRecommend;
-
-
-
         /// <summary>
         /// Clean up any resources being used.
         /// </summary>

@@ -63,6 +63,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="content-based recommendation systems.cs" />
+    <Compile Include="Event.cs" />
     <Compile Include="EventListPopup.cs">
       <SubType>Form</SubType>
     </Compile>

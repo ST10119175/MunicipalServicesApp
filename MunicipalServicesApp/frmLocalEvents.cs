@@ -13,7 +13,9 @@ namespace MunicipalServicesApp
     public partial class frmLocalEvents : Form
     {
 
-    
+       // https://www.w3schools.com/dsa/index.php
+       //Jamro, M. 2018. C# Data Structures and Algorithms
+       // Malik, D.S. (2018). C++ programming : program design including data structures. 6th ed.Boston, Ma: Cengage Learning.
 
         // Queue for managing service requests
         private Queue<ServiceRequest> serviceQueue = new Queue<ServiceRequest>();
@@ -36,8 +38,6 @@ namespace MunicipalServicesApp
         // Constants for UI text
         private const string SearchPlaceholder = "Search for events...";
 
-        private bool sortAscending = true; // Track sorting order
-
         private bool sortAscendingName = true; // Track sorting order for name
         private bool sortAscendingDate = true; // Track sorting order for date
         private bool sortAscendingCategory = true; // Track sorting order for category
@@ -49,7 +49,6 @@ namespace MunicipalServicesApp
 
         // List to store user search history
         private List<string> searchHistory = new List<string>();
-
 
 
 
@@ -70,6 +69,8 @@ namespace MunicipalServicesApp
             InitializeSearchBox();
             InitializeListView();
 
+            InitializeNeuralNetwork(); // Initialize the neural network here
+
             dateTimePicker1.ShowCheckBox = true;
 
             listViewEvents.ColumnClick += ListViewEvents_ColumnClick; // Subscribe to ColumnClick event
@@ -77,6 +78,208 @@ namespace MunicipalServicesApp
             
 
         }
+
+
+        //ML implantation here 
+
+        // Declare the necessary fields for the neural network
+        private Dictionary<string, int> categoryMap = new Dictionary<string, int>();
+        private SimpleNeuralNet neuralNetwork;
+        private User currentUser;
+
+        private void InitializeNeuralNetwork()
+        {
+            // Assuming 5 features (e.g., category one-hot encoding + normalized date)
+            neuralNetwork = new SimpleNeuralNet(learningRate: 0.01);
+            currentUser = new User(userId: 1);  // Initialize with user ID 1 (can be dynamic)
+        }
+
+        //end 
+
+
+
+
+        private async void PerformSearch()
+        {
+            // Use Task.Run to run the search asynchronously
+            await Task.Run(() =>
+            {
+
+                //string searchText = txtSearch.Text.ToLower();
+
+                // Trim the search text to remove any leading/trailing whitespace
+                string searchText = txtSearch.Text.Trim().ToLower();
+
+                string selectedCategory = null;
+
+                // Invoke to safely access UI controls
+                this.Invoke(new Action(() =>
+                {
+                    // Ignore the placeholder text
+                    if (searchText == SearchPlaceholder.ToLower())
+                    {
+                        searchText = null;
+                    }
+
+                    // Get selected category from comboBox
+                    selectedCategory = comboBoxCategories.SelectedItem as string;
+                }));
+
+                // Invoke to safely access UI controls
+                this.Invoke(new Action(() =>
+                {
+                    // If the search box contains the placeholder, we ignore the text search
+                    if (searchText == SearchPlaceholder.ToLower())
+                    {
+                        searchText = null;
+                    }
+
+                    if (!string.IsNullOrEmpty(searchText) && searchText != SearchPlaceholder.ToLower())
+                    {
+                        if (!searchHistory.Contains(searchText))
+                        {
+                            searchHistory.Add(searchText);
+                        }
+
+                        else
+                        {
+                            searchHistory.Add("goku");
+                            searchHistory.Add("sports");
+                        }
+                    }
+                }));
+
+                //ml stuff 
+                if (searchText != SearchPlaceholder.ToLower())
+                {
+                    // Add search term to history
+                    if (!searchHistory.Contains(searchText))
+                        searchHistory.Add(searchText);
+                }
+
+
+                DateTime selectedDate = dateTimePicker1.Value.Date;
+                bool isDateFilterChecked = false;
+
+                // Invoke to safely access UI controls
+                this.Invoke(new Action(() => 
+                { 
+                isDateFilterChecked = dateTimePicker1.Checked; // Check if the date filter is enabled
+                }));
+                
+
+                // Filter events based on search criteria
+                var filteredEvents = eventList.Where(evt =>
+                     (string.IsNullOrEmpty(searchText) || evt.Name.ToLower().Contains(searchText)) &&
+            (selectedCategory == "All Categories" || evt.Category == selectedCategory) &&
+            (!isDateFilterChecked || evt.Date.Date == selectedDate) // Apply date filter only if checked
+                ).ToList();
+
+
+
+                //ml 
+
+                // Invoke UI updates back on the main thread
+                this.Invoke(new Action(() =>
+                {
+                    // Add the events to the user's search history as training data
+                    foreach (var evt in filteredEvents)
+                {
+                    currentUser.AddSearch(evt);
+                }
+
+                // Populate the ListView with the filtered events
+                PopulateListView(filteredEvents);
+
+                // Display a message with the search results
+                string message = $"Displaying events";
+                if (!string.IsNullOrEmpty(searchText))
+                    message += $" containing '{searchText}'";
+                if (selectedCategory != "All Categories")
+                    message += $" in category '{selectedCategory}'";
+                if (selectedDate != DateTime.MinValue)
+                    message += $" on {selectedDate.ToString("dd MMM yyyy")}";
+
+                MessageBox.Show($"{message}\nFound {filteredEvents.Count} event(s)", "Search Results", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }));
+            });
+        }
+
+
+        // Method to populate the ListView with events
+        private void PopulateListView(IEnumerable<Event> events, string label = "Search Results", User user=null)
+        {
+
+
+            listViewEvents.Items.Clear();
+
+            foreach (var e in events)
+            {
+                var item = new ListViewItem(new[]
+                {
+                e.Name,
+                e.Date.ToString("dd MMM yyyy"),
+                e.Category
+            });
+                listViewEvents.Items.Add(item);
+            }
+
+            MessageBox.Show($"{label}: Found {events.Count()} event(s)", label, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        // Recommendation feature based on user's previous searches
+        private async void btnRecommend_Click(object sender, EventArgs e)
+        {
+
+            // Disable the button to prevent multiple clicks during processing
+            btnRecommend.Enabled = false;
+
+
+            // Train the neural network asynchronously
+            await Task.Run(() => neuralNetwork.Train(currentUser, eventList.ToArray(), categoryMap, epochs: 1000));
+
+
+            // Get recommendationstop 10 events using the neural network asynchronously
+            var mlrecommendedEvents = await Task.Run(() =>
+                neuralNetwork.RecommendEvents(currentUser, eventList.ToArray(), categoryMap, topN: 10));
+
+            // Display the recommended events
+            PopulateListView(mlrecommendedEvents, " neural network Recommended", currentUser);
+
+
+            // provide other recommendations from random categories as a fallback
+            var randomCategory = eventCategorySet.OrderBy(_ => Guid.NewGuid()).FirstOrDefault();
+
+            try
+            {
+              
+                if (!string.IsNullOrEmpty(randomCategory) && eventCategories.TryGetValue(randomCategory, out var recommendedEvents))
+                {
+                    PopulateListView(recommendedEvents);
+                    MessageBox.Show($"Recommended random events from category: {randomCategory}", "Recommendations", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("No recommendations available.", "Recommendations", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowError("Error generating recommendations", ex);
+            }
+
+            finally
+            {
+                // Re-enable the button after processing
+                btnRecommend.Enabled = true;
+            }
+
+
+            RecommendEventsBasedOnSearchHistory();
+
+
+        }
+
 
 
 
@@ -88,19 +291,24 @@ namespace MunicipalServicesApp
             // Count occurrences of search terms
             foreach (var term in searchHistory)
             {
-                if (searchFrequency.ContainsKey(term))
+                if (!string.IsNullOrEmpty(term))
                 {
-                    searchFrequency[term]++;
-                }
-                else
-                {
-                    searchFrequency[term] = 1;
+                    if (searchFrequency.ContainsKey(term))
+                    {
+                        searchFrequency[term]++;
+                    }
+                    else
+                    {
+                        searchFrequency[term] = 1;
+                    }
                 }
             }
 
             return searchFrequency;
         }
 
+
+        //frequency analysis of search history custom algorithm (Frequency-based relevance)
         private void RecommendEventsBasedOnSearchHistory()
         {
             var searchFrequency = AnalyzeSearchHistory();
@@ -123,10 +331,6 @@ namespace MunicipalServicesApp
             {
 
                 //// Recommend events that match the most frequent search term
-                //var recommendedEvents = eventList.Where(evt =>
-                //evt.Name.ToLower().Contains(mostFrequentSearch) ||
-                //evt.Category.ToLower().Contains(mostFrequentSearch)).ToList();
-
                 // Collect events that match the top search terms
                 foreach (var searchTerm in mostFrequentSearchTerms)
                 {
@@ -141,7 +345,7 @@ namespace MunicipalServicesApp
                 if (recommendedEvents.Any())
                 {
                     PopulateListView(recommendedEvents, mostFrequentSearch);
-                    MessageBox.Show($"Recommended events based on your interest in '{mostFrequentSearch}'", "Recommendations", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Recommended events based on your interest in (custom algorithm) '{mostFrequentSearch}'", "Recommendations", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
@@ -158,9 +362,7 @@ namespace MunicipalServicesApp
         {
             listViewEvents.Items.Clear();
 
-            // Display a message indicating that these are recommendations
-            
-                MessageBox.Show("Here are events based on your previous searches!", "Recommendations", MessageBoxButtons.OK, MessageBoxIcon.Information);
+           
             
 
             foreach (var e in events)
@@ -198,44 +400,10 @@ namespace MunicipalServicesApp
                 uniqueDates.Add(e.Date);
             }
 
-            // Display the unique categories and dates (you can customize this part)
-           // DisplayUniqueCategories();
-            //DisplayUniqueDates();
+           
         }
 
-        //// Method to display unique categories
-        //private void DisplayUniqueCategories()
-        //{
-        //    string Output ="";
-        //    foreach (var category in uniqueCategories)
-        //    {
-        //        Output = Output + $"\n {category}";
-               
-        //         Console.WriteLine($"Unique Category: {category}");
-        //    }
-
-        //    MessageBox.Show($"Unique Category: \n\n {Output}", "Hey", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //}
-
-        //// Method to display unique dates
-        //private void DisplayUniqueDates()
-        //{
-        //    string Output ="";
-        //    int x = 0;
-        //    foreach (var date in uniqueDates)
-        //    {
-        //        Output = Output + $"\n {date.ToString("dd MMM yyyy")}";
-
-                
-               
-        //        Console.WriteLine($"Unique Date: {date.ToString("dd MMM yyyy")}");
-        //    }
-
-        //    MessageBox.Show($"Unique Date:  {Output}", "Hey", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //}
-
-
-
+       
         // ColumnClick event handler for sorting
         private void ListViewEvents_ColumnClick(object sender, ColumnClickEventArgs e)
         {
@@ -330,55 +498,6 @@ namespace MunicipalServicesApp
             txtSearch.Leave += txtSearch_Leave;
         }
 
-        // Custom logic initialization (to be outside of designer-generated code)
-        //private void InitializeCustomLogic()
-        //{
-        //    // Set placeholder text for the search box
-        //    txtSearch.Text = "Search for events...";
-        //    txtSearch.ForeColor = System.Drawing.Color.Gray;
-
-
-        //    PopulateCategoryComboBox();
-
-        //    // Event for focus on the search box
-        //    txtSearch.Enter += (s, e) =>
-        //    {
-        //        if (txtSearch.Text == "Search for events...")
-        //        {
-        //            txtSearch.Text = "";
-        //            txtSearch.ForeColor = System.Drawing.Color.Black;
-        //        }
-        //    };
-
-        //    btnSearch.Click += btnSearch_Click;
-        //    btnSubmit.Click += btnSubmit_Click;
-        //    comboBoxCategories.SelectedIndexChanged += comboBoxCategories_SelectedIndexChanged;
-        //    dateTimePicker1.ValueChanged += dateTimePicker1_ValueChanged;
-        //    listViewEvents.SelectedIndexChanged += listViewEvents_SelectedIndexChanged;
-
-        //    txtSearch.Leave += (s, e) =>
-        //    {
-        //        if (string.IsNullOrWhiteSpace(txtSearch.Text))
-        //        {
-        //            txtSearch.Text = "Search for events...";
-        //            txtSearch.ForeColor = System.Drawing.Color.Gray;
-        //        }
-        //    };
-
-        //    // Search button click event
-        //    btnSearch.Click += btnSearch_Click;
-
-        //    // Reset filters event
-        //    btnSubmit.Click += btnSubmit_Click;
-
-        //    // Other event handlers
-        //    comboBoxCategories.SelectedIndexChanged += comboBoxCategories_SelectedIndexChanged;
-        //    dateTimePicker1.ValueChanged += dateTimePicker1_ValueChanged;
-        //    listViewEvents.SelectedIndexChanged += listViewEvents_SelectedIndexChanged;
-        //}
-
-
-
 
         // Initialize dummy event data
         private void PopulateEventList()
@@ -432,38 +551,6 @@ namespace MunicipalServicesApp
             }
         }
 
-
-
-
-        // Simplified ListView population
-        //private void PopulateListView(IEnumerable<Event> events)
-        //{
-
-        //    listViewEvents.Items.Clear();
-        //    listViewEvents.Items.AddRange(events.Select(e => new ListViewItem(new[]
-        //    {
-        //        e.Name,
-        //        e.Date.ToString("dd MMM yyyy"),
-        //        e.Category
-        //    })).ToArray());
-
-        //}
-
-        //// Populate the ListView with events
-        //private void PopulateListView(List<Event> events)
-        //{
-        //    listViewEvents.Items.Clear();
-        //    foreach (var eventItem in events)
-        //    {
-        //        ListViewItem listItem = new ListViewItem(new string[] {
-        //            eventItem.Name,
-        //            eventItem.Date.ToString("dd MMM yyyy"),
-        //            eventItem.Category
-        //        });
-        //        listViewEvents.Items.Add(listItem);
-        //    }
-        //}
-
         // Populate the category ComboBox
         private void PopulateCategoryComboBox()
         {
@@ -481,11 +568,7 @@ namespace MunicipalServicesApp
         // Method to add an event to its corresponding category in the dictionary
         private void AddEventToCategory(Event newEvent)
         {
-            //if (!eventCategories.ContainsKey(newEvent.Category))
-            //{
-            //    eventCategories[newEvent.Category] = new List<Event>();
-            //}
-            //eventCategories[newEvent.Category].Add(newEvent);
+          
 
             if (!eventCategories.TryGetValue(newEvent.Category, out var categoryEvents))
             {
@@ -611,79 +694,11 @@ namespace MunicipalServicesApp
         {
 
             PerformSearch();
-            //try
-            //{
-            //    string searchText = txtSearch.Text.ToLower();
-            //    if (searchText ==  SearchPlaceholder.ToLower())
-            //    {
-            //        return;
-            //    }
-            //    var filteredEvents = eventList.Where(evt => evt.Name.ToLower().Contains(searchText)
-            //        || evt.Category.ToLower().Contains(searchText)).ToList(); ;
-            //    PopulateListView(filteredEvents);
-            //}
-            //catch (Exception ex)
-            //{
-            //    ShowError("Error during search", ex);
-            //}
+           
         }
 
 
-        private void PerformSearch()
-        {
-
-
-            //string searchText = txtSearch.Text.ToLower();
-
-            // Trim the search text to remove any leading/trailing whitespace
-            string searchText = txtSearch.Text.Trim().ToLower();
-
-
-            // If the search box contains the placeholder, we ignore the text search
-            if (searchText == SearchPlaceholder.ToLower())
-            {
-                searchText = null;
-            }
-
-            if (!string.IsNullOrEmpty(searchText) && searchText != SearchPlaceholder.ToLower())
-            {
-                if (!searchHistory.Contains(searchText))
-                {
-                    searchHistory.Add(searchText);
-                }
-
-                else
-                {
-                    searchHistory.Add("goku");
-                    searchHistory.Add("sports");
-                }
-            }
-
-            string selectedCategory = comboBoxCategories.SelectedItem as string;
-            DateTime selectedDate = dateTimePicker1.Value.Date;
-            bool isDateFilterChecked = dateTimePicker1.Checked; // Check if the date filter is enabled
-
-            // Filter events based on search criteria
-            var filteredEvents = eventList.Where(evt =>
-                 (string.IsNullOrEmpty(searchText) || evt.Name.ToLower().Contains(searchText)) &&
-        (selectedCategory == "All Categories" || evt.Category == selectedCategory) &&
-        (!isDateFilterChecked || evt.Date.Date == selectedDate) // Apply date filter only if checked
-            ).ToList();
-
-            // Populate the ListView with the filtered events
-            PopulateListView(filteredEvents);
-
-            // Display a message with the search results
-            string message = $"Displaying events";
-            if (!string.IsNullOrEmpty(searchText))
-                message += $" containing '{searchText}'";
-            if (selectedCategory != "All Categories")
-                message += $" in category '{selectedCategory}'";
-            if (selectedDate != DateTime.MinValue)
-                message += $" on {selectedDate.ToString("dd MMM yyyy")}";
-
-            MessageBox.Show($"{message}\nFound {filteredEvents.Count} event(s)", "Search Results", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
+        
 
         private void comboBoxCategories_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -740,39 +755,6 @@ namespace MunicipalServicesApp
         }
 
 
-
-        // Recommendation feature based on user's previous searches
-        private void btnRecommend_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var randomCategory = eventCategorySet.OrderBy(_ => Guid.NewGuid()).FirstOrDefault();
-                if (!string.IsNullOrEmpty(randomCategory) && eventCategories.TryGetValue(randomCategory, out var recommendedEvents))
-                {
-                    PopulateListView(recommendedEvents);
-                    MessageBox.Show($"Recommended events from category: {randomCategory}", "Recommendations", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("No recommendations available.", "Recommendations", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                ShowError("Error generating recommendations", ex);
-            }
-
-         
-            RecommendEventsBasedOnSearchHistory();
-        
-
-        }
-
-
-
-    
-
-
         // Event handler for TextBox Enter event (removes placeholder text)
         private void txtSearch_Enter(object sender, EventArgs e)
         {
@@ -803,36 +785,4 @@ namespace MunicipalServicesApp
     }
 
 
-    //place these in a separate file
-
-
-    // Event class to store event details
-    public class Event
-    {
-        public string Name { get; set; }
-        public string Category { get; set; }
-        public DateTime Date { get; set; }
-
-        public Event(string name, string category, DateTime date)
-        {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
-            Category = category ?? throw new ArgumentNullException(nameof(category));
-            Date = date;
-        }
-
-
-
-
-    }
-
-    // ServiceRequest class to manage service requests
-    public class ServiceRequest
-    {
-        public string Description { get; set; }
-
-        public ServiceRequest(string description)
-        {
-            Description = description ?? throw new ArgumentNullException(nameof(description));
-        }
-    }
 }
