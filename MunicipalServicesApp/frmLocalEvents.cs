@@ -8,14 +8,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
+    // https://www.w3schools.com/dsa/index.php
+    //Jamro, M. 2018. C# Data Structures and Algorithms
+    // Malik, D.S. (2018). C++ programming : program design including data structures. 6th ed.Boston, Ma: Cengage Learning.
+
+
+
 namespace MunicipalServicesApp
 {
     public partial class frmLocalEvents : Form
     {
 
-       // https://www.w3schools.com/dsa/index.php
-       //Jamro, M. 2018. C# Data Structures and Algorithms
-       // Malik, D.S. (2018). C++ programming : program design including data structures. 6th ed.Boston, Ma: Cengage Learning.
 
         // Queue for managing service requests
         private Queue<ServiceRequest> serviceQueue = new Queue<ServiceRequest>();
@@ -59,7 +63,7 @@ namespace MunicipalServicesApp
         }
 
 
-        
+        //Custom form logic
         private void InitializeCustomLogic()
         {
             PopulateEventList();
@@ -71,16 +75,17 @@ namespace MunicipalServicesApp
 
             InitializeNeuralNetwork(); // Initialize the neural network here
 
-            dateTimePicker1.ShowCheckBox = true;
+            dateTimePicker1.ShowCheckBox = true; //Check box to exclude date from search 
 
             listViewEvents.ColumnClick += ListViewEvents_ColumnClick; // Subscribe to ColumnClick event
 
-            
+
 
         }
 
 
         //ML implantation here 
+        // a simple neural network is used for binary classification
 
         // Declare the necessary fields for the neural network
         private Dictionary<string, int> categoryMap = new Dictionary<string, int>();
@@ -162,11 +167,11 @@ namespace MunicipalServicesApp
                 bool isDateFilterChecked = false;
 
                 // Invoke to safely access UI controls
-                this.Invoke(new Action(() => 
-                { 
-                isDateFilterChecked = dateTimePicker1.Checked; // Check if the date filter is enabled
+                this.Invoke(new Action(() =>
+                {
+                    isDateFilterChecked = dateTimePicker1.Checked; // Check if the date filter is enabled
                 }));
-                
+
 
                 // Filter events based on search criteria
                 var filteredEvents = eventList.Where(evt =>
@@ -184,30 +189,30 @@ namespace MunicipalServicesApp
                 {
                     // Add the events to the user's search history as training data
                     foreach (var evt in filteredEvents)
-                {
-                    currentUser.AddSearch(evt);
-                }
+                    {
+                        currentUser.AddSearch(evt);
+                    }
 
-                // Populate the ListView with the filtered events
-                PopulateListView(filteredEvents);
+                    // Populate the ListView with the filtered events
+                    PopulateListView(filteredEvents);
 
-                // Display a message with the search results
-                string message = $"Displaying events";
-                if (!string.IsNullOrEmpty(searchText))
-                    message += $" containing '{searchText}'";
-                if (selectedCategory != "All Categories")
-                    message += $" in category '{selectedCategory}'";
-                if (selectedDate != DateTime.MinValue)
-                    message += $" on {selectedDate.ToString("dd MMM yyyy")}";
+                    // Display a message with the search results
+                    string message = $"Displaying events";
+                    if (!string.IsNullOrEmpty(searchText))
+                        message += $" containing '{searchText}'";
+                    if (selectedCategory != "All Categories")
+                        message += $" in category '{selectedCategory}'";
+                    if (selectedDate != DateTime.MinValue)
+                        message += $" on {selectedDate.ToString("dd MMM yyyy")}";
 
-                MessageBox.Show($"{message}\nFound {filteredEvents.Count} event(s)", "Search Results", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"{message}\nFound {filteredEvents.Count} event(s)", "Search Results", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }));
             });
         }
 
 
         // Method to populate the ListView with events
-        private void PopulateListView(IEnumerable<Event> events, string label = "Search Results", User user=null)
+        private void PopulateListView(IEnumerable<Event> events, string label = "Search Results", User user = null)
         {
 
 
@@ -252,7 +257,7 @@ namespace MunicipalServicesApp
 
             try
             {
-              
+
                 if (!string.IsNullOrEmpty(randomCategory) && eventCategories.TryGetValue(randomCategory, out var recommendedEvents))
                 {
                     PopulateListView(recommendedEvents);
@@ -358,12 +363,12 @@ namespace MunicipalServicesApp
             }
         }
 
-        private void PopulateListView(IEnumerable<Event> events,string searched)
+        private void PopulateListView(IEnumerable<Event> events, string searched)
         {
             listViewEvents.Items.Clear();
 
-           
-            
+
+
 
             foreach (var e in events)
             {
@@ -379,7 +384,7 @@ namespace MunicipalServicesApp
 
 
 
-
+        //Button to Hash Sets: Store unique event categories.
         private void materialButton1_Click(object sender, EventArgs e)
         {
             PopulateUniqueCategoriesAndDates(); // Populate unique categories and dates
@@ -400,10 +405,10 @@ namespace MunicipalServicesApp
                 uniqueDates.Add(e.Date);
             }
 
-           
+
         }
 
-       
+
         // ColumnClick event handler for sorting
         private void ListViewEvents_ColumnClick(object sender, ColumnClickEventArgs e)
         {
@@ -568,7 +573,7 @@ namespace MunicipalServicesApp
         // Method to add an event to its corresponding category in the dictionary
         private void AddEventToCategory(Event newEvent)
         {
-          
+
 
             if (!eventCategories.TryGetValue(newEvent.Category, out var categoryEvents))
             {
@@ -578,7 +583,7 @@ namespace MunicipalServicesApp
             categoryEvents.Add(newEvent);
         }
 
-      
+
 
         // Event handler to view event details (push event onto stack)
         private void listViewEvents_SelectedIndexChanged(object sender, EventArgs e)
@@ -652,8 +657,8 @@ namespace MunicipalServicesApp
         {
             try
             {
-                
-            
+
+
                 if (serviceQueue.Count > 0)
                 {
                     ServiceRequest request = serviceQueue.Dequeue();
@@ -694,11 +699,11 @@ namespace MunicipalServicesApp
         {
 
             PerformSearch();
-           
+
         }
 
 
-        
+
 
         private void comboBoxCategories_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -780,6 +785,9 @@ namespace MunicipalServicesApp
         {
             MessageBox.Show($"{message}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+
+
+        //this was a button to lose the window i just dont like how it looks 
 
         //private void button1_Click(object sender, EventArgs e)
         //{
