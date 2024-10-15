@@ -76,7 +76,7 @@ MunicipalServicesApp/
 ### How to Compile and Run
 1. **Clone the Repository**:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/IIEWFL/prog7312-part-2-ST10119175.git
    ```
 
 2. **Open in Visual Studio**:
