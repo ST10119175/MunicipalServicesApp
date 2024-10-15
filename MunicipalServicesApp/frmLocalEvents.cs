@@ -781,7 +781,10 @@ namespace MunicipalServicesApp
             MessageBox.Show($"{message}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-     
+        //private void button1_Click(object sender, EventArgs e)
+        //{
+        //    this.Close();
+        //}
     }
 
 
