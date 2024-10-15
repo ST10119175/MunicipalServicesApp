@@ -1,33 +1,75 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET
+name: .NET Framework CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
   build:
-
-    runs-on: windows-latest  # Change to Windows
+    runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
+    - uses: actions/checkout@v2
     
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.1
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.5
+
+    - name: Find packages.config
+      shell: pwsh
+      run: |
+        $packagesConfig = Get-ChildItem -Path ${{ github.workspace }} -Filter packages.config -Recurse | Select-Object -First 1
+        if ($packagesConfig) {
+          Write-Host "Found packages.config: $($packagesConfig.FullName)"
+          echo "PACKAGES_CONFIG_PATH=$($packagesConfig.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        } else {
+          Write-Host "No packages.config found."
+          exit 1
+        }
+
     - name: Restore NuGet packages
-      run: dotnet restore
+      shell: pwsh
+      run: |
+        if ($env:PACKAGES_CONFIG_PATH) {
+          Write-Host "Restoring NuGet packages from: $env:PACKAGES_CONFIG_PATH"
+          nuget restore $env:PACKAGES_CONFIG_PATH -SolutionDirectory ${{ github.workspace }}
+        } else {
+          Write-Host "No packages.config path set. Cannot restore packages."
+          exit 1
+        }
 
-    - name: Build
-      run: dotnet build --no-restore --configuration Release --platform x86
-    
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    - name: Find and build .csproj files
+      shell: pwsh
+      run: |
+        $projects = Get-ChildItem -Path ${{ github.workspace }} -Filter *.csproj -Recurse
+        if ($projects) {
+          foreach ($project in $projects) {
+            Write-Host "Building project: $($project.FullName)"
+            msbuild /p:Configuration=Release $project.FullName
+          }
+        } else {
+          Write-Host "No .csproj files found."
+          exit 1
+        }
+
+    - name: Run tests
+      shell: pwsh
+      run: |
+        $testProjects = Get-ChildItem -Path ${{ github.workspace }} -Filter *Tests.csproj -Recurse
+        if ($testProjects) {
+          foreach ($project in $testProjects) {
+            Write-Host "Running tests for: $($project.FullName)"
+            dotnet test $project.FullName --no-build --verbosity normal
+          }
+        } else {
+          Write-Host "No test projects found."
+          Write-Host "Skipping test step."
+        }
 
