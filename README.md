@@ -1,14 +1,14 @@
 # Municipal Services Application
 
 ## Overview
-The Municipal Services Application is a platform designed for South African citizens to report municipal issues and access local events and announcements. The application enhances user engagement by offering features like issue reporting, event recommendations, and tracking service requests.
+The Municipal Services Application is a platform for South African citizens to report municipal issues and access local events and announcements. It enhances user engagement by offering features like issue reporting, event recommendations, and service request tracking.
 
 ## Features
 1. **Report Issues**: Users can report municipal issues (e.g., sanitation, roads, utilities) by providing details such as location, category, description, and attachments.
    
 2. **Local Events and Announcements**: View and search upcoming local events based on categories and dates.
 
-3. **Service Request Tracking**: Users can track the status of their submitted service requests (upcoming feature).
+3. - **Service Request Tracking (New Feature):** Users can track the status of their submitted service requests. This feature utilizes various data structures such as binary trees, AVL trees, heaps, graphs, and hash tables for efficient management and retrieval of service requests.
 
 4. **Recommendations**: Suggests related events based on user search patterns through a content-based recommendation system.
 
@@ -18,10 +18,14 @@ The Municipal Services Application is a platform designed for South African citi
 - **Language**: C#
 - **Framework**: .NET Framework
 - **Data Structures**:
-  - **Queues**: Manage events in chronological order.
-  - **Sorted Dictionaries**: Efficiently retrieve events by date.
-  - **Hash Sets**: Store unique event categories.
-  - **Dictionaries**: Track user search patterns for event recommendations.
+ - **Queues:** Manage events in chronological order.
+  - **Sorted Dictionaries:** Efficiently retrieve events by date.
+  - **Hash Sets:** Store unique event categories.
+  - **Dictionaries:** Track user search patterns for event recommendations.
+  - **Binary Trees (AVL Trees):** Organize service requests by criteria such as priority and timestamp for efficient searching and retrieval.
+  - **Heaps (Priority Queues):** Manage service requests based on priority for quick access to the most urgent tasks.
+  - **Graphs:** Represent relationships between service requests, workers, and locations for optimized pathfinding and resource allocation.
+  - **Hash Tables:** Store and quickly retrieve service request statuses by unique identifiers.
 
 ### System Requirements
 - **Operating System**: Windows 10 or later
@@ -37,6 +41,7 @@ MunicipalServicesApp/
 ├── EventManager.cs        # Class for managing events
 ├── EventListPop.cs        # Class for managing unique event categories
 ├── RecommendationSystem.cs# Event recommendation system
+├── ServiceRequestStatusForm.cs # Manages service request tracking
 ├── README.md              # This file
 └── ...
 ```
@@ -76,7 +81,7 @@ MunicipalServicesApp/
 ### How to Compile and Run
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/IIEWFL/prog7312-part-2-ST10119175.git
+   git clone https://github.com/IIEWFL/prog7312-poe-ST10119175.git
    ```
 
 2. **Open in Visual Studio**:
@@ -88,16 +93,54 @@ MunicipalServicesApp/
 4. **Run the Application**:
    - Press `F5` to run the app.
 
+
+## Loading the Service Requests Data
+
+To load the service request data into the application, follow these steps:
+
+1. **Prepare the CSV File**:
+   - Ensure you have a `ServiceRequests.csv` file containing the data you want to load into the application. The CSV should follow this basic format:
+     ```
+     RequestID, IssueCategory, Description, Location, Status, DateReported
+     1, Sanitation, Blocked drain, Newtown, Pending, 2024-11-01
+     2, Roads, Pothole repair, Hillview, Completed, 2024-11-03
+     ...
+     ```
+   - The file should be formatted with the following columns:
+     - `RequestID`: Unique identifier for the service request.
+     - `IssueCategory`: Category of the issue (e.g., Sanitation, Roads, etc.).
+     - `Description`: Description of the reported issue.
+     - `Location`: Location of the issue.
+     - `Status`: Current status of the service request (e.g., Pending, Completed).
+     - `DateReported`: Date the request was reported.
+
+2. **Load the Data in the Application**:
+   - The `ServiceRequests.csv` can be loaded into the application via the `ServiceRequestManager` class.
+   - You can add this functionality by calling the `LoadServiceRequests` method with the file path of the CSV.
+
+   Example:
+   ```csharp
+   ServiceRequestManager.LoadServiceRequests("path_to_your_file/ServiceRequests.csv");
+   ```
+
+3. **Method Overview**:
+   - The `LoadServiceRequests` method reads the CSV file, parses each row, and creates a `ServiceRequest` object for each entry.
+   - The data is then added to an internal collection (e.g., `List<ServiceRequest>`) for further processing and display in the application.
+
+4. **Verify the Data**:
+   - After loading, you can check the list of service requests via the “Service Request Tracking” feature in the app.
+   - The requests will be displayed with their details, and you can track their current status or view more details about each one.
+
+
 ## Usage
 1. **Report Issues**: Use the report form to submit municipal issues with attachments.
 2. **View Events**: Check local events and announcements. Filter by categories and dates.
 3. **Receive Recommendations**: Get personalized event suggestions based on your search history.
+4. - **Track Service Requests:** View the status of submitted service requests.
 
 ## License
 This project is licensed under the MIT License. See the LICENSE file for more details.
 
-
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/WcLxskuS)
 
 
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/BbhbQeE4)
