@@ -93,6 +93,46 @@ MunicipalServicesApp/
 4. **Run the Application**:
    - Press `F5` to run the app.
 
+
+## Loading the Service Requests Data
+
+To load the service request data into the application, follow these steps:
+
+1. **Prepare the CSV File**:
+   - Ensure you have a `ServiceRequests.csv` file containing the data you want to load into the application. The CSV should follow this basic format:
+     ```
+     RequestID, IssueCategory, Description, Location, Status, DateReported
+     1, Sanitation, Blocked drain, Newtown, Pending, 2024-11-01
+     2, Roads, Pothole repair, Hillview, Completed, 2024-11-03
+     ...
+     ```
+   - The file should be formatted with the following columns:
+     - `RequestID`: Unique identifier for the service request.
+     - `IssueCategory`: Category of the issue (e.g., Sanitation, Roads, etc.).
+     - `Description`: Description of the reported issue.
+     - `Location`: Location of the issue.
+     - `Status`: Current status of the service request (e.g., Pending, Completed).
+     - `DateReported`: Date the request was reported.
+
+2. **Load the Data in the Application**:
+   - The `ServiceRequests.csv` can be loaded into the application via the `ServiceRequestManager` class.
+   - You can add this functionality by calling the `LoadServiceRequests` method with the file path of the CSV.
+
+   Example:
+   ```csharp
+   ServiceRequestManager.LoadServiceRequests("path_to_your_file/ServiceRequests.csv");
+   ```
+
+3. **Method Overview**:
+   - The `LoadServiceRequests` method reads the CSV file, parses each row, and creates a `ServiceRequest` object for each entry.
+   - The data is then added to an internal collection (e.g., `List<ServiceRequest>`) for further processing and display in the application.
+
+4. **Verify the Data**:
+   - After loading, you can check the list of service requests via the “Service Request Tracking” feature in the app.
+   - The requests will be displayed with their details, and you can track their current status or view more details about each one.
+
+## License
+
 ## Usage
 1. **Report Issues**: Use the report form to submit municipal issues with attachments.
 2. **View Events**: Check local events and announcements. Filter by categories and dates.
