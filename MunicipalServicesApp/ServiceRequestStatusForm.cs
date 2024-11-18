@@ -11,6 +11,12 @@ using System.Globalization;
 using System.IO;
 using MaterialSkin.Controls;
 
+
+//https://www.w3schools.com/dsa/index.php
+//Klein, Prof.  Richard (2014). 8 Binary Search Trees | Introduction to Data Structures & Algorithms. [online] Wits.ac.za. Available at: https://courses.ms.wits.ac.za/~richard/IDSA-Notes-YouTube/bst.html [Accessed 14 Oct. 2024].
+//Marcin Jamro (2018). C# data structures and algorithms : explore the possibilities of C# for developing a variety of efficient applications. Birmingham Packt.
+
+
 namespace MunicipalServicesApp
 {
     public partial class ServiceRequestStatusForm : Form
