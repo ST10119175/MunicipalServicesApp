@@ -131,7 +131,6 @@ To load the service request data into the application, follow these steps:
    - After loading, you can check the list of service requests via the “Service Request Tracking” feature in the app.
    - The requests will be displayed with their details, and you can track their current status or view more details about each one.
 
-## License
 
 ## Usage
 1. **Report Issues**: Use the report form to submit municipal issues with attachments.
