@@ -99,6 +99,13 @@
       <DependentUpon>ReportIssuesForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SampleDataProvider.cs" />
+    <Compile Include="ServiceRequeststatus.cs" />
+    <Compile Include="ServiceRequestStatusForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ServiceRequestStatusForm.Designer.cs">
+      <DependentUpon>ServiceRequestStatusForm.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="EventListPopup.resx">
       <DependentUpon>EventListPopup.cs</DependentUpon>
     </EmbeddedResource>
@@ -122,6 +129,9 @@
     </Compile>
     <EmbeddedResource Include="ReportIssuesForm.resx">
       <DependentUpon>ReportIssuesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ServiceRequestStatusForm.resx">
+      <DependentUpon>ServiceRequestStatusForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

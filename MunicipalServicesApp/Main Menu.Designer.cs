@@ -58,7 +58,6 @@
             // 
             this.btnServiceStatus.BackColor = System.Drawing.Color.ForestGreen;
             this.btnServiceStatus.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnServiceStatus.Enabled = false;
             this.btnServiceStatus.FlatAppearance.BorderSize = 0;
             this.btnServiceStatus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnServiceStatus.Font = new System.Drawing.Font("Segoe UI", 12F);
@@ -69,6 +68,7 @@
             this.btnServiceStatus.TabIndex = 1;
             this.btnServiceStatus.Text = "Service Request Status";
             this.btnServiceStatus.UseVisualStyleBackColor = false;
+            this.btnServiceStatus.Click += new System.EventHandler(this.btnServiceStatus_Click);
             // 
             // btnLocalEvents
             // 
