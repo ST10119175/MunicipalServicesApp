@@ -55,6 +55,7 @@ namespace MunicipalServicesApp
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ServiceRequestStatusForm));
             this.topPanel = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
             this.placeholderLabel = new System.Windows.Forms.Label();
             this.titleLabel = new System.Windows.Forms.Label();
             this.searchTextBox = new System.Windows.Forms.TextBox();
@@ -73,6 +74,7 @@ namespace MunicipalServicesApp
             // topPanel
             // 
             this.topPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.topPanel.Controls.Add(this.button1);
             this.topPanel.Controls.Add(this.placeholderLabel);
             this.topPanel.Controls.Add(this.titleLabel);
             this.topPanel.Controls.Add(this.searchTextBox);
@@ -86,6 +88,19 @@ namespace MunicipalServicesApp
             this.topPanel.Padding = new System.Windows.Forms.Padding(15, 16, 15, 16);
             this.topPanel.Size = new System.Drawing.Size(893, 105);
             this.topPanel.TabIndex = 1;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Location = new System.Drawing.Point(720, 44);
+            this.button1.Margin = new System.Windows.Forms.Padding(2);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(156, 25);
+            this.button1.TabIndex = 6;
+            this.button1.Text = "AdvancedFilterButton";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // placeholderLabel
             // 
@@ -230,9 +245,11 @@ namespace MunicipalServicesApp
 
         }
 
-        
+
 
         #endregion
+
+        private Button button1;
     }
     
 

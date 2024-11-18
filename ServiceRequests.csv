@@ -1,0 +1,51 @@
+Id,Description,Status,SubmissionDate,Priority
+1,Animal control issue on Maple Street,Completed,2024-04-23,1
+2,Dog park maintenance required,In Progress,2024-02-15,4
+3,Water outage in Parkview area,In Progress,2024-09-24,3
+4,Animal control issue on Maple Street,Cancelled,2024-01-20,4
+5,Animal control issue on Maple Street,Pending,2024-03-30,4
+6,Street flooding after heavy rain,Pending,2024-10-22,2
+7,Broken bench in Town Square,In Progress,2024-02-18,4
+8,Broken fountain in Main Plaza,Completed,2024-03-09,2
+9,Damaged road sign on Victoria Avenue,Pending,2024-03-16,5
+10,Fence repair needed at soccer field,In Progress,2024-09-07,4
+11,Noise complaint from Oak Street,Pending,2024-05-19,2
+12,Overgrown grass in community park,Cancelled,2024-03-26,2
+13,Pothole on Elm Road,Pending,2024-02-13,4
+14,Pothole on Elm Road,Pending,2024-08-04,3
+15,Flooding on Riverbank Drive,Completed,2024-11-14,4
+16,Wild animal sighting at Woodland Estate,Completed,2024-05-15,1
+17,Dog park maintenance required,Completed,2024-11-13,3
+18,Fence damage at Green Park,Cancelled,2024-05-22,5
+19,Overgrown grass in community park,In Progress,2024-05-09,5
+20,Public restroom out of order at Parkside,Cancelled,2024-08-22,4
+21,Illegal dumping near Riverside,Pending,2024-07-29,2
+22,Flooding on Riverbank Drive,Pending,2024-01-30,1
+23,Wild animal sighting at Woodland Estate,Cancelled,2024-06-09,1
+24,Public restroom out of order at Parkside,Completed,2024-02-21,3
+25,Leaking sewage near Harbor Road,Completed,2024-07-30,1
+26,Littering issue on Beacon Road,In Progress,2024-10-22,3
+27,Mosquito infestation at Lakeview,In Progress,2024-05-12,1
+28,Graffiti removal at South Mall,Pending,2024-04-12,5
+29,Faulty fire hydrant in Southgate,Cancelled,2024-10-26,5
+30,Overcrowding issue at taxi rank,In Progress,2024-05-05,4
+31,Animal control issue on Maple Street,Pending,2024-07-28,1
+32,Leaking sewage near Harbor Road,Cancelled,2024-09-18,5
+33,Streetlight repair on Main Street,In Progress,2024-07-13,2
+34,Street flooding after heavy rain,Pending,2024-10-25,1
+35,Tree pruning needed on Forest Drive,Completed,2024-05-13,4
+36,Illegal dumping near Riverside,Cancelled,2024-09-25,1
+37,Recycling bins overflowing at depot,Cancelled,2024-01-25,4
+38,Abandoned vehicle in Sunset Blvd,In Progress,2024-11-06,1
+39,Graffiti removal at South Mall,Cancelled,2024-11-08,5
+40,Illegal dumping near Riverside,In Progress,2024-10-26,2
+41,Pothole on Elm Road,Completed,2024-10-06,2
+42,Missing manhole cover on King Street,In Progress,2024-02-20,2
+43,Public restroom out of order at Parkside,In Progress,2024-04-02,2
+44,Unlawful vending at Market Square,In Progress,2024-02-11,4
+45,Broken bench in Town Square,Cancelled,2024-06-16,5
+46,Tree pruning needed on Forest Drive,Pending,2024-01-06,4
+47,Recycling bins overflowing at depot,Cancelled,2024-06-03,3
+48,Road markings faded on Pine Avenue,Completed,2024-05-02,4
+49,Dog park maintenance required,Completed,2024-01-08,1
+50,Community hall maintenance required,Cancelled,2024-05-01,3

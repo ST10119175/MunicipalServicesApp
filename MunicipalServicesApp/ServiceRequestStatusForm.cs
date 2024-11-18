@@ -60,6 +60,8 @@ namespace MunicipalServicesApp
             // Load data
             PopulateListView();
 
+            ApplyCustomStyling();
+
             // Additional event handlers
             searchButton.Click += SearchButton_Click;
             filterComboBox.SelectedIndexChanged += FilterComboBox_SelectedIndexChanged;
@@ -741,8 +743,198 @@ namespace MunicipalServicesApp
         }
 
 
+        private void ApplyCustomStyling()
+        {
+            // Apply custom styling to the form
+            this.BackColor = Color.FromArgb(240, 240, 240);
+            this.Font = new Font("Segoe UI", 10F);
+            // Apply custom styling to the ListView
+            requestListView.BackColor = Color.White;
+            requestListView.ForeColor = Color.Black;
+            requestListView.Font = new Font("Segoe UI", 9F);
+            // Apply custom styling to the status label
+            statusLabel.BackColor = Color.FromArgb(240, 240, 240);
+            statusLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+        }
 
 
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+            Button advancedFilterButton = new Button
+            {
+                Text = "Advanced Filters",
+                Size = new Size(120, 25),
+                Location = new Point(660, 60) // Adjust based on your form layout
+            };
+
+            advancedFilterButton.Click += (s, x) => ApplyAdvancedFilter();
+
+            this.Controls.Add(advancedFilterButton);
+        }
+
+        private void ApplyAdvancedFilter()
+        {
+            // Create advanced filter form
+            Form filterForm = new Form
+            {
+                Text = "Advanced Request Filters",
+                Size = new Size(400, 500),
+                StartPosition = FormStartPosition.CenterScreen
+            };
+
+            // Create filter controls
+            GroupBox priorityGroup = new GroupBox
+            {
+                Text = "Priority Range",
+                Location = new Point(20, 20),
+                Size = new Size(350, 100)
+            };
+
+            TrackBar minPriorityTrack = new TrackBar
+            {
+                Minimum = 1,
+                Maximum = 5,
+                Location = new Point(20, 30),
+                Size = new Size(300, 45),
+                TickStyle = TickStyle.Both
+            };
+
+            TrackBar maxPriorityTrack = new TrackBar
+            {
+                Minimum = 1,
+                Maximum = 5,
+                Location = new Point(20, 60),
+                Size = new Size(300, 45),
+                TickStyle = TickStyle.Both
+            };
+
+            Label minPriorityLabel = new Label
+            {
+                Text = "Min Priority: 1",
+                Location = new Point(20, 100)
+            };
+
+            Label maxPriorityLabel = new Label
+            {
+                Text = "Max Priority: 5",
+                Location = new Point(20, 130)
+            };
+
+            DateTimePicker startDatePicker = new DateTimePicker
+            {
+                Location = new Point(20, 200),
+                Size = new Size(350, 25),
+                Format = DateTimePickerFormat.Short,
+                Text = "Start Date"
+            };
+
+            DateTimePicker endDatePicker = new DateTimePicker
+            {
+                Location = new Point(20, 250),
+                Size = new Size(350, 25),
+                Format = DateTimePickerFormat.Short,
+                Text = "End Date"
+            };
+
+            CheckedListBox statusListBox = new CheckedListBox
+            {
+                Location = new Point(20, 300),
+                Size = new Size(350, 100)
+            };
+            statusListBox.Items.AddRange(new string[]
+            {
+        "Pending",
+        "In Progress",
+        "Completed",
+        "Cancelled"
+            });
+
+            Button applyFilterBtn = new Button
+            {
+                Text = "Apply Filters",
+                Location = new Point(150, 420),
+                Size = new Size(100, 30)
+            };
+
+            // Add controls to form
+            priorityGroup.Controls.AddRange(new Control[]
+            {
+        minPriorityTrack,
+        maxPriorityTrack,
+        minPriorityLabel,
+        maxPriorityLabel
+            });
+
+            filterForm.Controls.AddRange(new Control[]
+            {
+        priorityGroup,
+        startDatePicker,
+        endDatePicker,
+        statusListBox,
+        applyFilterBtn
+            });
+
+            // Event handlers for dynamic updates
+            minPriorityTrack.Scroll += (s, e) =>
+            {
+                minPriorityLabel.Text = $"Min Priority: {minPriorityTrack.Value}";
+                if (minPriorityTrack.Value > maxPriorityTrack.Value)
+                    maxPriorityTrack.Value = minPriorityTrack.Value;
+            };
+
+            maxPriorityTrack.Scroll += (s, e) =>
+            {
+                maxPriorityLabel.Text = $"Max Priority: {maxPriorityTrack.Value}";
+                if (maxPriorityTrack.Value < minPriorityTrack.Value)
+                    minPriorityTrack.Value = maxPriorityTrack.Value;
+            };
+
+            // Apply filter logic
+            applyFilterBtn.Click += (s, e) =>
+            {
+                int minPriority = minPriorityTrack.Value;
+                int maxPriority = maxPriorityTrack.Value;
+                DateTime startDate = startDatePicker.Value;
+                DateTime endDate = endDatePicker.Value;
+
+                var selectedStatuses = statusListBox.CheckedItems
+                    .Cast<string>()
+                    .ToList();
+
+                // Clear existing items
+                requestListView.Items.Clear();
+
+                // Filter requests
+                var filteredRequests = requestLookup.Values
+                    .Where(r =>
+                        r.Priority >= minPriority &&
+                        r.Priority <= maxPriority &&
+                        r.SubmissionDate >= startDate &&
+                        r.SubmissionDate <= endDate &&
+                        (selectedStatuses.Count == 0 || selectedStatuses.Contains(r.Status)))
+                    .ToList();
+
+                // Populate ListView with filtered requests
+                foreach (var request in filteredRequests)
+                {
+                    var item = new ListViewItem(request.Id);
+                    item.SubItems.Add(request.Description);
+                    item.SubItems.Add(request.Status);
+                    item.SubItems.Add(request.SubmissionDate.ToString("yyyy-MM-dd"));
+                    item.SubItems.Add(request.Priority.ToString());
+                    requestListView.Items.Add(item);
+                }
+
+                statusLabel.Text = $"Advanced filter applied. {filteredRequests.Count} results found.";
+                filterForm.Close();
+            };
+
+            filterForm.ShowDialog();
+        }
+
+       
     }
 
     // MinHeap implementation for priority management
